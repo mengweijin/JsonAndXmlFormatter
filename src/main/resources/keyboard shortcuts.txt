@@ -1,0 +1,18 @@
+快捷键：
+    F1：清空
+    F2：打开文件
+    F3：格式化XML
+    F4：格式化JSON
+    F5：XML转JSON
+    F6：JSON转XML
+    F7：隐藏行号
+    F8（Ctrl + F）：查找
+    F9: 帮助
+    F11：行首
+    F12：行尾
+    Ctrl + C：复制
+    Ctrl + V：粘贴
+    Ctrl + X：剪切
+    Ctrl + A：全选
+    Ctrl + Z：撤销
+    Ctrl + R：恢复
