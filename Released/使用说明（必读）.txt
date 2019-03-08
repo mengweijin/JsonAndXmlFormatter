@@ -1,8 +1,18 @@
 JsonAndXmlFomatter
-Version: 1.0
+Version: 1.0.1
 Author: Meng Wei Jin
-Version Released Date: 2017-11-19
+码云地址：https://gitee.com/mengweijin/JsonAndXmlFormatter
+GitHub：https://github.com/mengweijin/JsonAndXmlFormatter
 如果您在使用过程中发现任何问题请联系作者：mengweijin.work@foxmail.com
+
+注：打开文件时，请确保文件为UTF-8编码格式，否则有可能发生中文字符乱码。
+
+2019-03-09：Version 1.0.1 版本发布。
+更新说明：
+    1、重写所有功能处理方式，移除臃肿依赖。
+
+2017-11-19：Version 1.0 版本发布。
+
 
 运行该程序需要JAVA运行环境的支持（配置JAVA_HOME并将%JAVA_HOME%的bin目录添加到环境变量即可）。
 
@@ -15,5 +25,5 @@ JAVA环境安装：
 3、配置环境变量JAVA_HOME（如：JAVA_HOME=D:\Program Files\Java\jdk1.8.0_65）
 
 
-更新日志：
-2017-11-19：Version 1.0 版本发布。
+
+

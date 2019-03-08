@@ -8,9 +8,10 @@ Json和xml互相转换和格式化展示
 #### 安装部署教程
 ```
 JsonAndXmlFomatter
-Version: 1.0
+Version: 1.0.1
 Author: Meng Wei Jin
-Version Released Date: 2017-11-19
+码云地址：https://gitee.com/mengweijin/JsonAndXmlFormatter
+GitHub：https://github.com/mengweijin/JsonAndXmlFormatter
 如果您在使用过程中发现任何问题请联系作者：mengweijin.work@foxmail.com
    
 运行该程序需要JAVA运行环境的支持（配置JAVA_HOME并将%JAVA_HOME%的bin目录添加到环境变量即可）。

@@ -1,19 +1,12 @@
 package com.mwj;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.LinkedHashMap;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.json.XML;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 
 /**
  * @Description:
@@ -24,163 +17,90 @@ import java.util.LinkedHashMap;
 public class XmlAndJsonUtils {
 
     /**
-     * 格式化XML Dom4j方式
-     * @param inputXML
+     * 使用fastjson
+     * @param object 集合或者对象
      * @return
      */
-    public static String formatXML(String inputXML) throws IOException, DocumentException {
-        if (null == inputXML || "".equals(inputXML)) {
-            return "";
-        }
-        // 去掉所有换行
-        inputXML = inputXML.replaceAll("\\n", "");
-        String resultXML = "";
-        XMLWriter writer;
+    public static String formatFastJSON(Object object){
+        return JSONObject.toJSONString(object,
+                // 输出key时是否使用双引号,默认为true
+                SerializerFeature.QuoteFieldNames,
+                // Enum输出name()或者original,默认为false
+                SerializerFeature.WriteEnumUsingToString,
+                // 结果是否格式化,默认为false
+                SerializerFeature.PrettyFormat,
+                // 是否输出值为null的字段,默认为false
+                SerializerFeature.WriteMapNullValue,
+                // 字符类型字段如果为null,输出为"",而非null
+                SerializerFeature.WriteNullStringAsEmpty,
+                // Boolean字段如果为null,输出为false,而非null
+                // SerializerFeature.WriteNullBooleanAsFalse,
+                // 消除对同一对象循环引用的问题，默认为false
+                SerializerFeature.DisableCircularReferenceDetect,
+                // List字段如果为null,输出为[],而非null
+                SerializerFeature.WriteNullListAsEmpty);
+    }
 
-        SAXReader reader = new SAXReader();
-        Document document = reader.read(new StringReader(inputXML));
-        if (document != null) {
-            StringWriter stringWriter = new StringWriter();
-            // 8个空格
-            OutputFormat format = new OutputFormat("        ", true);
-            writer = new XMLWriter(stringWriter, format);
-            writer.write(document);
-            writer.flush();
-            resultXML = stringWriter.getBuffer().toString();
-            writer.close();
-        }
 
-        return resultXML;
+
+    /**
+     * use org.json
+     * The number of spaces to add to each level of indentation.
+     * @param json
+     * @param indentFactor
+     * @return
+     */
+    public static String formatJSON(String json, int indentFactor){
+        if(indentFactor < 0){
+            indentFactor = 0;
+        }
+        return new org.json.JSONObject(json).toString(indentFactor);
     }
 
     /**
-     * 格式化JSON
-     * @param jsonStr
+     * use org.json xml
+     * @param xml 转为json
      * @return
      */
-    public static String formatJSON(String jsonStr) {
-        if (null == jsonStr || "".equals(jsonStr)) {
-            return "";
-        }
-        // 去掉所有换行
-        jsonStr = jsonStr.replaceAll("\\n", "");
-        StringBuilder sb = new StringBuilder();
-        char last = '\0';
-        char current = '\0';
-        int indent = 0;
-        for (int i = 0; i < jsonStr.length(); i++) {
-            last = current;
-            current = jsonStr.charAt(i);
-            switch (current) {
-                case '{':
-                case '[':
-                    sb.append(current);
-                    sb.append('\n');
-                    indent++;
-                    addIndentBlank(sb, indent);
-
-                    jsonStr = jsonStr.substring(i + 1).trim();
-                    i = -1;
-                    break;
-                case '}':
-                case ']':
-                    sb.append('\n');
-                    indent--;
-                    addIndentBlank(sb, indent);
-                    sb.append(current);
-
-                    jsonStr = jsonStr.substring(i + 1).trim();
-                    i = -1;
-                    break;
-                case ',':
-                    sb.append(current);
-                    if (last != '\\') {
-                        sb.append('\n');
-                        addIndentBlank(sb, indent);
-
-                        jsonStr = jsonStr.substring(i + 1).trim();
-                        i = -1;
-                    }
-                    break;
-                case ':':
-                    sb.append(current);
-                    // 去掉冒号后面的空格
-                    jsonStr = jsonStr.substring(i + 1).trim();
-                    i = -1;
-                    break;
-                default:
-                    sb.append(current);
-            }
-        }
-
-        String result = sb.toString().replaceAll("\\n\\s*\\n", "\n");
-        result = result.replaceAll("\"\\s+:", "\":");
-        result = result.replaceAll("\"\\s+,", "\",");
-        return result;
+    public static String xml2Json(String xml){
+        return XML.toJSONObject(xml).toString(8);
     }
 
-    /**
-     * 添加8空格space
-     * @param sb
-     * @param indent
-     */
-    private static void addIndentBlank(StringBuilder sb, int indent) {
-        for (int i = 0; i < indent; i++) {
-            sb.append("        ");
-        }
-    }
-
-    /**
-     * xml 转　json
-     * 存在相同名称的节点时，转换存在Bug,建议使用fastjson的方式转换。
-     * @param xml
-     * @return
-     */
-    public static String xml2Json(String xml) throws IOException, DocumentException {
-        // 格式化xml
-        xml = formatXML(xml);
-        XmlMapper xmlMapper = new XmlMapper();
-        ObjectMapper objMapper = new ObjectMapper();
-        StringWriter sw = new StringWriter();
-
-        JsonParser jp = xmlMapper.getFactory().createParser(xml);
-        JsonGenerator jg = objMapper.getFactory().createGenerator(sw);
-        while (jp.nextToken() != null) {
-            jg.copyCurrentEvent(jp);
-        }
-        Tools.closeStream(jp, jg);
-
-        return sw.toString();
-    }
 
     /**
      * json 转 xml
-     * @param jsonStr
+     * @param json
      * @return
      */
-    public static String json2Xml(String jsonStr) throws IOException {
-        Object mapObj = json2Obj(jsonStr, LinkedHashMap.class);
-        XmlMapper xml = new XmlMapper();
-        String resultXml = xml.writeValueAsString(mapObj);
-
-        resultXml = resultXml.replaceFirst("<LinkedHashMap>", "").trim();
-        resultXml = resultXml.substring(0, resultXml.length() - "</LinkedHashMap>".length());
-
-        return resultXml;
+    public static String json2Xml(String json) {
+        org.json.JSONObject object = new org.json.JSONObject(json);
+        return XML.toString(object);
     }
 
     /**
-     * json转javabean, map, list等对象
-     *
-     * @param json
-     * @param cls
+     * format xml
+     * @param xml
      * @return
+     * @throws TransformerException
      */
-    public static Object json2Obj(String json, Class<?> cls) throws IOException {
-        ObjectMapper objMapper = new ObjectMapper();
-        Object obj = objMapper.readValue(json, cls);
+    public static String formatXml(String xml) {
 
-        return obj;
+        try(BufferedReader reader = new BufferedReader(new StringReader(xml));
+            StringWriter writer = new StringWriter()){
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+            transformer.transform(new StreamSource(reader), new StreamResult(writer));
+            return writer.toString();
+        } catch (TransformerException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
 }

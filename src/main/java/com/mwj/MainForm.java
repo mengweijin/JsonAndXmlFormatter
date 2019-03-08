@@ -56,7 +56,7 @@ public class MainForm {
                 String text1 = textArea1.getText().trim();
                 if(!"".equals(text1)) {
                     try {
-                        String formatXml = XmlAndJsonUtils.formatXML(text1);
+                        String formatXml = XmlAndJsonUtils.formatXml(text1);
                         textArea2.setText(formatXml);
                         textArea2ToFirstRow();
                     } catch (Exception e1) {
@@ -72,7 +72,7 @@ public class MainForm {
             public void actionPerformed(ActionEvent e) {
                 String text1 = textArea1.getText().trim();
                 if(!"".equals(text1)) {
-                    String formatJson = XmlAndJsonUtils.formatJSON(text1);
+                    String formatJson = XmlAndJsonUtils.formatFastJSON(JSONObject.parseObject(text1));
                     textArea2.setText(formatJson);
                     textArea2ToFirstRow();
                 }
@@ -85,9 +85,7 @@ public class MainForm {
                 String text1 = textArea1.getText().trim();
                 if(!"".equals(text1)) {
                     try {
-                        JSONObject jsonObject = FastJsonUtils.xml2Json(text1);
-                        String formatJson = XmlAndJsonUtils.formatJSON(jsonObject.toJSONString());
-                        textArea2.setText(formatJson);
+                        textArea2.setText(XmlAndJsonUtils.xml2Json(text1));
                         textArea2ToFirstRow();
                     } catch (Exception e1) {
                         e1.printStackTrace();
@@ -104,7 +102,7 @@ public class MainForm {
                 if(!"".equals(text1)) {
                     try {
                         String xmlStr = XmlAndJsonUtils.json2Xml(text1);
-                        String formatXml = XmlAndJsonUtils.formatXML(xmlStr);
+                        String formatXml = XmlAndJsonUtils.formatXml(xmlStr);
                         textArea2.setText(formatXml);
                         textArea2ToFirstRow();
                     } catch (Exception e1) {
@@ -228,7 +226,7 @@ public class MainForm {
         mainForm.jscrollPane1.setRowHeaderView(new LineNumberHeaderView());
         mainForm.jscrollPane2.setRowHeaderView(new LineNumberHeaderView());
 
-        JFrame frame = new JFrame("JsonAndXmlFormatter    Version 1.0");
+        JFrame frame = new JFrame("JsonAndXmlFormatter    Version 1.0.1");
         frame.setContentPane(mainForm.mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
